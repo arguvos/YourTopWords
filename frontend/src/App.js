@@ -12,6 +12,36 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import Stack from "@mui/material/Stack";
 
 function App() {
+  const [word, setWord] = useState("Click know to start");
+
+  const next = () => {
+    fetch("http://localhost:8080/top1000/next", {
+        method: 'POST',
+        credentials: 'include'
+    })
+      .then((response) => response.text())
+      .then((response) => {
+        setWord(response);
+      })
+      .catch(() => {
+        setWord("Something wrong with internet connection");
+      });
+  };
+
+  const prev = () => {
+    fetch("http://localhost:8080/top1000/prev", {
+        method: 'POST',
+        credentials: 'include'
+    })
+      .then((response) => response.text())
+      .then((response) => {
+        setWord(response);
+      })
+      .catch(() => {
+        setWord("Something wrong with internet connection");
+      });
+  };
+
   return (
     <div className="center">
     <Card sx={{ minWidth: 255, maxWidth: 255, margin: "auto"}}>
@@ -27,7 +57,7 @@ function App() {
           Do you know:
         </Typography>
         <Typography variant="h5" component="div">
-          benevolent
+          {word}
         </Typography>
       </CardContent>
       <CardActions>
@@ -38,8 +68,8 @@ function App() {
             variant="contained"
             aria-label="Disabled elevation buttons"
           >
-            <Button>dont</Button>
-            <Button>know</Button>
+            <Button onClick={prev}>dont</Button>
+            <Button onClick={next}>know</Button>
           </ButtonGroup>
         </Stack>
       </CardActions>

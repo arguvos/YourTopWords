@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
 @RestController()
 @RequestMapping("top1000")
+@CrossOrigin(allowCredentials = "true", origins = "http://localhost:3000")
 public class TopWordEndpoint {
 
     @Autowired
