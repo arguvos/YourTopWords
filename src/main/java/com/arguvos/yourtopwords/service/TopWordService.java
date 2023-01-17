@@ -10,12 +10,10 @@ import java.util.List;
 public class TopWordService {
     public State next(State state, Boolean isKnow) {
         String nextWord = TopWords.TOP_1000.get(0);
-        if (state.getCurrentWord() != null) {
+        if (state.getCurrentWord() != null && !state.getCurrentWord().isBlank()) {
             int index = TopWords.TOP_1000.indexOf(state.getCurrentWord());
 
-            if (isKnow != null && isKnow) {
-                state.getWordStatistics()[index] = true;
-            }
+            state.getWordStatistics()[index] = isKnow != null && isKnow;
 
             nextWord = TopWords.TOP_1000.get(index + 1 >= TopWords.TOP_1000.size() ? index : index + 1);
         }

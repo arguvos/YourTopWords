@@ -10,7 +10,7 @@ public class EncodeHelper {
     }
 
     public static boolean[] decodeOrCreate(String str, int countElement) {
-        if (str == null) {
+        if (str == null || str.isBlank()) {
             return new boolean[countElement];
         }
         return decode(str);
