@@ -11,6 +11,8 @@ import Stack from "@mui/material/Stack";
 
 function App() {
     const [word, setWord] = useState("Click know to start");
+    const [number, setNumber] = useState(0);
+    const [renderDownload, setRenderDownload] = useState(false);
 
     const next = (value) => {
         let isKnow = new URLSearchParams();
@@ -20,9 +22,14 @@ function App() {
             credentials: 'include',
             body: isKnow
         })
-            .then((response) => response.text())
+            .then((response) => response.json())
             .then((response) => {
-                setWord(response);
+                setWord(response.word);
+                setNumber(response.number);
+                setRenderDownload(response.finish);
+                if (response.finish) {
+                    setWord("Finished, for show words click button");
+                }
             })
             .catch(() => {
                 setWord("Something wrong with internet connection");
@@ -34,9 +41,10 @@ function App() {
             method: 'POST',
             credentials: 'include'
         })
-            .then((response) => response.text())
+            .then((response) => response.json())
             .then((response) => {
-                setWord(response);
+                setWord(response.word);
+                setNumber(response.number);
             })
             .catch(() => {
                 setWord("Something wrong with internet connection");
@@ -50,6 +58,22 @@ function App() {
         })
             .then((response) => {
                 setWord("Click know to start");
+                setNumber(0);
+                setRenderDownload(false);
+            })
+            .catch(() => {
+                setWord("Something wrong with internet connection");
+            });
+    };
+
+    const unknowwords = () => {
+        fetch("http://localhost:8080/top1000/unknowwords", {
+            method: 'POST',
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                setWord(response.join(", "));
             })
             .catch(() => {
                 setWord("Something wrong with internet connection");
@@ -66,11 +90,11 @@ function App() {
                             color="text.secondary"
                             gutterBottom
                         >
-                            1 / 1000 word
+                            {number} / 1000 word
                         </Typography>
                         <Button sx={{marginLeft: "auto", fontSize: 10}}
-                            variant="outlined"
-                            onClick={reset}>reset</Button>
+                                variant="outlined"
+                                onClick={reset}>reset</Button>
                     </Stack>
                     <Typography sx={{fontSize: 14}} color="text.secondary" gutterBottom>
                         Do you know:
@@ -79,19 +103,28 @@ function App() {
                         {word}
                     </Typography>
                 </CardContent>
-                <CardActions>
-                    <Button sx={{marginRight: "auto"}} variant="contained" onClick={prev}>back</Button>
-                    <ButtonGroup
-                        disableElevation
-                        variant="contained"
-                        aria-label="Disabled elevation buttons"
-                        sx={{marginLeft: "auto"}}
-                    >
-                        <Button onClick={() => next(false)}>dont</Button>
-                        <Button onClick={() => next(true)}>know</Button>
-                    </ButtonGroup>
-
-                </CardActions>
+                {
+                    !renderDownload &&
+                    <CardActions>
+                        <Button sx={{marginRight: "auto"}} variant="contained" onClick={prev}>back</Button>
+                        <ButtonGroup
+                            disableElevation
+                            variant="contained"
+                            aria-label="Disabled elevation buttons"
+                            sx={{marginLeft: "auto"}}
+                        >
+                            <Button onClick={() => next(false)}>dont</Button>
+                            <Button onClick={() => next(true)}>know</Button>
+                        </ButtonGroup>
+                    </CardActions>
+                }
+                {
+                    renderDownload &&
+                    <CardActions>
+                        <Button sx={{margin: "auto", width: "auto"}} variant="contained" color="success" onClick={unknowwords}>
+                            SHOW UNKNOW WORDS</Button>
+                    </CardActions>
+                }
             </Card>
         </div>
     );

@@ -17,7 +17,7 @@ public class TopWordService {
 
             nextWord = TopWords.TOP_1000.get(index + 1 >= TopWords.TOP_1000.size() ? index : index + 1);
         }
-        return new State(nextWord, state.getWordStatistics());
+        return new State(nextWord, TopWords.TOP_1000.indexOf(nextWord) + 1, state.getWordStatistics());
     }
 
 
@@ -27,7 +27,7 @@ public class TopWordService {
             int index = TopWords.TOP_1000.indexOf(state.getCurrentWord());
             prevWord = TopWords.TOP_1000.get(Math.max(index - 1, 0));
         }
-        return new State(prevWord, state.getWordStatistics());
+        return new State(prevWord, TopWords.TOP_1000.indexOf(prevWord) + 1, state.getWordStatistics());
     }
 
     public List<String> getUnKnowWords(boolean[] unKnowWords) {
