@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,32 +19,35 @@ import java.util.concurrent.Executors;
 @Service
 public class TranslateCache {
     private static final String SOURCE_LANG = "en";
-    private static final String TARGET_LANG = "de";
     private static final int DELAY_MS = 10000;
     private static final int SCATTER_MS = 5000;
-    private final ConcurrentHashMap<String, Translation> cache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<WordKey, Translation> cache = new ConcurrentHashMap<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    @Value("${languages}")
+    private String[] languages;
 
     @PostConstruct
     private void run() {
         executor.submit(() -> {
-            ReversoContextClient reversoContextClient = new ReversoContextClient(SOURCE_LANG, TARGET_LANG);
-            for (String word : TopWords.TOP_1000) {
-                log.debug("Loading translation for word {}", word);
-                try {
-                    List<String> translations = reversoContextClient.getTranslations(word);
-                    List<Pair<String, String>> translationSamples = reversoContextClient.getTranslationSamples(word);
-                    if (!translations.isEmpty() && !translationSamples.isEmpty()) {
-                        Translation translation = new Translation(translations, translationSamples);
-                        cache.put(word, translation);
-                        log.debug("Loaded translation for word {} : {}", word, translation);
-                    } else {
-                        log.warn("No translation or samples for word {}", word);
+            for (String language : languages) {
+                ReversoContextClient reversoContextClient = new ReversoContextClient(SOURCE_LANG, language);
+                for (String word : TopWords.TOP_1000) {
+                    log.debug("Loading translation for word \"{}\" and language {}", word, language);
+                    try {
+                        List<String> translations = reversoContextClient.getTranslations(word);
+                        List<Pair<String, String>> translationSamples = reversoContextClient.getTranslationSamples(word);
+                        if (!translations.isEmpty() && !translationSamples.isEmpty()) {
+                            Translation translation = new Translation(translations, translationSamples);
+                            cache.put(new WordKey(language, word), translation);
+                            log.debug("Loaded translation for word \"{}\" : {}", word, translation);
+                        } else {
+                            log.warn("No translation or samples for word \"{}\" and language {}", word, language);
+                        }
+                    } catch (Exception exception) {
+                        log.error("Error loading translation for word \"{}\" and language {}", word, language);
                     }
-                } catch (Exception exception) {
-                    log.error("Error loading translation for word {}", word, exception);
+                    sleep();
                 }
-                sleep();
             }
         });
     }
@@ -59,6 +63,13 @@ public class TranslateCache {
 
     public boolean isLoaded() {
         return executor.isShutdown();
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class WordKey {
+        private String language;
+        private String word;
     }
 
     @Data
