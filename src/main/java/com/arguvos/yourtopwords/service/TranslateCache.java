@@ -1,6 +1,7 @@
 package com.arguvos.yourtopwords.service;
 
 import com.arguvos.yourtopwords.reversocontext.ReversoContextClient;
+import com.arguvos.yourtopwords.service.cache.Cache;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,9 +10,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,10 +22,14 @@ public class TranslateCache {
     private static final String SOURCE_LANG = "en";
     private static final int DELAY_MS = 10000;
     private static final int SCATTER_MS = 5000;
-    private final ConcurrentHashMap<WordKey, Translation> cache = new ConcurrentHashMap<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Cache cache;
     @Value("${languages}")
     private String[] languages;
+
+    public TranslateCache(Cache cache) {
+        this.cache = cache;
+    }
 
     @PostConstruct
     private void run() {
@@ -33,12 +38,16 @@ public class TranslateCache {
                 ReversoContextClient reversoContextClient = new ReversoContextClient(SOURCE_LANG, language);
                 for (String word : TopWords.TOP_1000) {
                     log.debug("Loading translation for word \"{}\" and language {}", word, language);
+                    WordKey key = new WordKey(language, word);
+                    if (cache.contains(key)) {
+                        continue;
+                    }
                     try {
                         List<String> translations = reversoContextClient.getTranslations(word);
                         List<Pair<String, String>> translationSamples = reversoContextClient.getTranslationSamples(word);
                         if (!translations.isEmpty() && !translationSamples.isEmpty()) {
                             Translation translation = new Translation(translations, translationSamples);
-                            cache.put(new WordKey(language, word), translation);
+                            cache.put(key, translation);
                             log.debug("Loaded translation for word \"{}\" : {}", word, translation);
                         } else {
                             log.warn("No translation or samples for word \"{}\" and language {}", word, language);
@@ -67,14 +76,14 @@ public class TranslateCache {
 
     @Data
     @AllArgsConstructor
-    static class WordKey {
+    public static class WordKey implements Serializable {
         private String language;
         private String word;
     }
 
     @Data
     @AllArgsConstructor
-    static class Translation {
+    public static class Translation implements Serializable {
         private List<String> translate;
         private List<Pair<String, String>> samples;
     }
