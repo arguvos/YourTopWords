@@ -3,6 +3,7 @@ package com.arguvos.yourtopwords.config;
 import com.arguvos.yourtopwords.service.TranslateCache;
 import com.arguvos.yourtopwords.service.cache.Cache;
 import com.arguvos.yourtopwords.service.cache.MapCache;
+import com.arguvos.yourtopwords.service.cache.MemCache;
 import com.arguvos.yourtopwords.service.cache.RedisCache;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +13,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
 public class Config {
-    @Value("${redis.cache.enable}")
-    private boolean redisCacheEnable;
+    @Value("${cache}")
+    private String cache;
     private final RedisConnectionFactory redisConnectionFactory;
 
     public Config(RedisConnectionFactory redisConnectionFactory) {
@@ -28,9 +29,12 @@ public class Config {
     }
 
     @Bean
-    public Cache getMyService() {
-        if (redisCacheEnable)
+    public Cache getCache() {
+        if (cache.equals("redis"))
             return new RedisCache(redisTemplate());
+        else if (cache.equals("memcache")) {
+            return new MemCache();
+        }
         return new MapCache();
     }
 }

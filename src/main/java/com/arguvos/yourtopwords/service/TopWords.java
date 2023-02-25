@@ -8,8 +8,7 @@ public class TopWords {
             "of",
             "to",
             "and",
-            "a"
-    );/*
+            "a",
             "in",
             "is",
             "it",
@@ -1005,5 +1004,5 @@ public class TopWords {
             "teeth",
             "shell",
             "neck"
-    );*/
+    );
 }
