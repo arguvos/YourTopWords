@@ -26,6 +26,8 @@ public class TranslateCache {
     private final Cache cache;
     @Value("${languages}")
     private String[] languages;
+    @Value("${load.translate.at.start:true}")
+    private boolean isLoadTranslate;
 
     public TranslateCache(Cache cache) {
         this.cache = cache;
@@ -33,6 +35,10 @@ public class TranslateCache {
 
     @PostConstruct
     private void run() {
+        if (!isLoadTranslate) {
+            log.info("Load translate at start is disable");
+            return;
+        }
         executor.submit(() -> {
             for (String language : languages) {
                 ReversoContextClient reversoContextClient = new ReversoContextClient(SOURCE_LANG, language);
