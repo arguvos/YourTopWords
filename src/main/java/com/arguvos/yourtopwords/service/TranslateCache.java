@@ -67,6 +67,10 @@ public class TranslateCache {
         });
     }
 
+    public TranslateCache.Translation getTranslate(WordKey wordKey) {
+        return cache.get(wordKey);
+    }
+
     private synchronized static void sleep() {
         Random random = new Random();
         try {

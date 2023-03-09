@@ -80,6 +80,15 @@ function App() {
             });
     };
 
+    const anki = () => {
+        fetch("http://localhost:8080/top1000/anki?" + new URLSearchParams({
+                lang: 'ru',
+            }), {
+            method: 'GET',
+            credentials: 'include',
+        });
+    };
+
     return (
         <div className="center">
             <Card sx={{minWidth: 300, maxWidth: 300, margin: "auto"}}>
@@ -123,6 +132,8 @@ function App() {
                     <CardActions>
                         <Button sx={{margin: "auto", width: "auto"}} variant="contained" color="success" onClick={unknowwords}>
                             SHOW UNKNOW WORDS</Button>
+                        <Button sx={{margin: "auto", width: "auto"}} variant="contained" color="success" onClick={anki}>
+                            DOWNLOAD ANKI</Button>
                     </CardActions>
                 }
             </Card>

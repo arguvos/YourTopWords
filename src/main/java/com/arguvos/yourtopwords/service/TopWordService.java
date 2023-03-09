@@ -30,13 +30,13 @@ public class TopWordService {
         return new State(prevWord, TopWords.TOP_1000.indexOf(prevWord) + 1, state.getWordStatistics());
     }
 
-    public List<String> getUnKnowWords(boolean[] unKnowWords) {
-        List<String> unKnowWordString = new ArrayList<>();
-        for (int i = 0; i < unKnowWords.length; i++) {
-            if (!unKnowWords[i]) {
-                unKnowWordString.add(TopWords.TOP_1000.get(i));
+    public List<String> getUnknowWords(boolean[] unknowWords) {
+        List<String> unknowWordList = new ArrayList<>();
+        for (int i = 0; i < unknowWords.length; i++) {
+            if (!unknowWords[i]) {
+                unknowWordList.add(TopWords.TOP_1000.get(i));
             }
         }
-        return unKnowWordString;
+        return unknowWordList;
     }
 }
