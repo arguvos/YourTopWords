@@ -59,7 +59,13 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.34.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.anki</groupId>
+			<artifactId>tool4j</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/ankireader4j-1.0.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>
