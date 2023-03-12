@@ -13,8 +13,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 @RestController()
@@ -79,11 +77,11 @@ public class TopWordEndpoint {
     public ResponseEntity<byte[]> anki(@CookieValue(name = "wordStatistics") String wordStatistics,
                                        @RequestParam(name = "lang") String targetLanguage) throws IOException {
         List<String> unknowWords = topWordService.getUnknowWords(EncodeHelper.decode(wordStatistics));
-        String ankiFilePath = ankiService.createAnkiFile(unknowWords, targetLanguage);
-
+        byte[] ankiBytes = ankiService.getAnkiBytes(unknowWords, targetLanguage);
+        
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
         httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(DEFAULT_ANKI_FILE_NAME).build().toString());
-        return ResponseEntity.ok().headers(httpHeaders).body(Files.readAllBytes(Paths.get(ankiFilePath)));
+        return ResponseEntity.ok().headers(httpHeaders).body(ankiBytes);
     }
 }
