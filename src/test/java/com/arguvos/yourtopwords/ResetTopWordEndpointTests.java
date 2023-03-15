@@ -1,7 +1,7 @@
 package com.arguvos.yourtopwords;
 
 
-import com.arguvos.yourtopwords.service.TopWords;
+import com.arguvos.yourtopwords.service.TopWordLoader;
 import com.arguvos.yourtopwords.util.EncodeHelper;
 import com.arguvos.yourtopwords.util.TestHelper;
 import jakarta.servlet.http.Cookie;
@@ -22,12 +22,13 @@ class ResetTopWordEndpointTests {
 
 	@Autowired
 	private MockMvc mockMvc;
-
+	@Autowired
+	private TopWordLoader topWordLoader;
 
 	@Test
 	void reset() throws Exception {
 		int currentIndex = TestHelper.COUNT_ELEMENT - 1;
-		String currentWord = TopWords.TOP_1000.get(currentIndex);
+		String currentWord = topWordLoader.getTopWords().get(currentIndex);
 
 		this.mockMvc
 				.perform(post(TestHelper.RESET_URL_TEMPLATE)

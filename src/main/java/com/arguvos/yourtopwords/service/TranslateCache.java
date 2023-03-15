@@ -23,13 +23,16 @@ public class TranslateCache {
     private static final int DELAY_MS = 10000;
     private static final int SCATTER_MS = 5000;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private TopWordLoader topWordLoader;
     private final Cache cache;
     @Value("${languages}")
     private String[] languages;
     @Value("${load.translate.at.start:true}")
     private boolean isLoadTranslate;
 
-    public TranslateCache(Cache cache) {
+    public TranslateCache(TopWordLoader topWordLoader,
+                          Cache cache) {
+        this.topWordLoader = topWordLoader;
         this.cache = cache;
     }
 
@@ -42,7 +45,7 @@ public class TranslateCache {
         executor.submit(() -> {
             for (String language : languages) {
                 ReversoContextClient reversoContextClient = new ReversoContextClient(SOURCE_LANG, language);
-                for (String word : TopWords.TOP_1000) {
+                for (String word : topWordLoader.getTopWords()) {
                     log.debug("Loading translation for word \"{}\" and language {}", word, language);
                     WordKey key = new WordKey(language, word);
                     if (cache.contains(key)) {

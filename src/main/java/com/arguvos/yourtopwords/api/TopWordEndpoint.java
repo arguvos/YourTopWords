@@ -4,7 +4,7 @@ import com.arguvos.yourtopwords.model.State;
 import com.arguvos.yourtopwords.model.Word;
 import com.arguvos.yourtopwords.service.AnkiService;
 import com.arguvos.yourtopwords.service.TopWordService;
-import com.arguvos.yourtopwords.service.TopWords;
+import com.arguvos.yourtopwords.service.TopWordLoader;
 import com.arguvos.yourtopwords.util.EncodeHelper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,15 +16,19 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController()
-@RequestMapping("top1000")
+@RequestMapping("top")
 @CrossOrigin(allowCredentials = "true", origins = "http://localhost:3000")
 public class TopWordEndpoint {
     private static final String DEFAULT_ANKI_FILE_NAME = "anki.apkg";
+    private final TopWordLoader topWordLoader;
     private final TopWordService topWordService;
     private final AnkiService ankiService;
 
     @Autowired
-    public TopWordEndpoint(TopWordService topWordService, AnkiService ankiService) {
+    public TopWordEndpoint(TopWordLoader topWordLoader,
+                           TopWordService topWordService,
+                           AnkiService ankiService) {
+        this.topWordLoader = topWordLoader;
         this.topWordService = topWordService;
         this.ankiService = ankiService;
     }
@@ -34,7 +38,7 @@ public class TopWordEndpoint {
                                        @CookieValue(name = "wordStatistics", required = false) String wordStatistics,
                                        Boolean isKnow,
                                        HttpServletResponse response) {
-        State state = new State(currentWord, EncodeHelper.decodeOrCreate(wordStatistics, TopWords.TOP_1000.size()));
+        State state = new State(currentWord, EncodeHelper.decodeOrCreate(wordStatistics, topWordLoader.getTopWords().size()));
 
         State nextState = topWordService.next(state, isKnow);
 
@@ -49,10 +53,10 @@ public class TopWordEndpoint {
                                        @CookieValue(name = "wordStatistics", required = false) String wordStatistics,
                                        HttpServletResponse response) {
         if (currentWord == null) {
-            currentWord = TopWords.TOP_1000.get(0);
+            currentWord = topWordLoader.getTopWords().get(0);
         }
 
-        State state = new State(currentWord, EncodeHelper.decodeOrCreate(wordStatistics, TopWords.TOP_1000.size()));
+        State state = new State(currentWord, EncodeHelper.decodeOrCreate(wordStatistics, topWordLoader.getTopWords().size()));
 
         State prevState = topWordService.prev(state);
 

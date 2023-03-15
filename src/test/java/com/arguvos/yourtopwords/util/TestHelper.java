@@ -1,14 +1,12 @@
 package com.arguvos.yourtopwords.util;
 
-import com.arguvos.yourtopwords.service.TopWords;
-
 public class TestHelper {
-    public static final int COUNT_ELEMENT = TopWords.TOP_1000.size();
+    public static final int COUNT_ELEMENT = 1000;
     public static final boolean[] EMPTY_WORD_STATISTIC = EncodeHelper.decodeOrCreate(null, COUNT_ELEMENT);
-    public static final String NEXT_URL_TEMPLATE = "/top1000/next";
-    public static final String PREV_URL_TEMPLATE = "/top1000/prev";
-    public static final String RESET_URL_TEMPLATE = "/top1000/reset";
-    public static final String UNKNOWWORDS_URL_TEMPLATE = "/top1000/unknowwords";
+    public static final String NEXT_URL_TEMPLATE = "/top/next";
+    public static final String PREV_URL_TEMPLATE = "/top/prev";
+    public static final String RESET_URL_TEMPLATE = "/top/reset";
+    public static final String UNKNOWWORDS_URL_TEMPLATE = "/top/unknowwords";
     public static final String ROOT_EXPRESSION = "$.*";
     public static final String WORD_EXPRESSION = "$.word";
     public static final String NUMBER_EXPRESSION = "$.number";

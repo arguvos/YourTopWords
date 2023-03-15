@@ -17,7 +17,7 @@ function App() {
     const next = (value) => {
         let isKnow = new URLSearchParams();
         isKnow.append('isKnow', value);
-        fetch("http://localhost:8080/top1000/next", {
+        fetch("http://localhost:8080/top/next", {
             method: 'POST',
             credentials: 'include',
             body: isKnow
@@ -37,7 +37,7 @@ function App() {
     };
 
     const prev = () => {
-        fetch("http://localhost:8080/top1000/prev", {
+        fetch("http://localhost:8080/top/prev", {
             method: 'POST',
             credentials: 'include'
         })
@@ -52,7 +52,7 @@ function App() {
     };
 
     const reset = () => {
-        fetch("http://localhost:8080/top1000/reset", {
+        fetch("http://localhost:8080/top/reset", {
             method: 'POST',
             credentials: 'include'
         })
@@ -67,7 +67,7 @@ function App() {
     };
 
     const unknowwords = () => {
-        fetch("http://localhost:8080/top1000/unknowwords", {
+        fetch("http://localhost:8080/top/unknowwords", {
             method: 'POST',
             credentials: 'include'
         })
@@ -81,7 +81,7 @@ function App() {
     };
 
     const anki = () => {
-        fetch("http://localhost:8080/top1000/anki?" + new URLSearchParams({
+        fetch("http://localhost:8080/top/anki?" + new URLSearchParams({
                 lang: 'ru',
             }), {
             method: 'GET',
