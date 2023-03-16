@@ -1,5 +1,5 @@
 import './App.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -7,12 +7,16 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Stack from "@mui/material/Stack";
+import {MenuItem, Select} from "@mui/material";
 
 
 function App() {
     const [word, setWord] = useState("Click know to start");
     const [number, setNumber] = useState(0);
+    const [totalCount, setTotalCount] = useState(0);
+    const [languages, setLanguages] = useState([]);
     const [renderDownload, setRenderDownload] = useState(false);
+    const [ready, setReady] = useState(false);
 
     const next = (value) => {
         let isKnow = new URLSearchParams();
@@ -89,6 +93,51 @@ function App() {
         });
     };
 
+    const getStatus = () => {
+        fetch("http://localhost:8080/status", {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(() => setReady(true))
+            .catch(() => {
+                setWord("Service is not ready");
+            });
+    };
+
+    const getCountWords = () => {
+        fetch("http://localhost:8080/top/count", {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                setTotalCount(response);
+            })
+            .catch(() => {
+                setWord("Something wrong with internet connection");
+            });
+    };
+
+    const getAvailableLanguage = () => {
+        fetch("http://localhost:8080/language/available", {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                setLanguages(response);
+            })
+            .catch(() => {
+                setWord("Something wrong with internet connection");
+            });
+    };
+
+    useEffect(() => {
+        getStatus();
+        getCountWords();
+        getAvailableLanguage();
+    }, []);
+
     return (
         <div className="center">
             <Card sx={{minWidth: 300, maxWidth: 300, margin: "auto"}}>
@@ -99,8 +148,17 @@ function App() {
                             color="text.secondary"
                             gutterBottom
                         >
-                            {number} / 1000 word
+                            {number} / {totalCount} word
                         </Typography>
+                        <Select sx={{marginLeft: "auto", fontSize: 10}}
+                            size="small"
+                            labelId="demo-simple-select-autowidth-label"
+                            id="demo-simple-select-autowidth"
+                            //onChange={handleChange}
+                            label="Language"
+                        >
+                            {languages.map(e => <MenuItem value={e}>{e}</MenuItem>)}
+                        </Select>
                         <Button sx={{marginLeft: "auto", fontSize: 10}}
                                 variant="outlined"
                                 onClick={reset}>reset</Button>

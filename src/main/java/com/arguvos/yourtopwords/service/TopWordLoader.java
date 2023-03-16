@@ -16,7 +16,7 @@ public class TopWordLoader {
     private static final String TOP_WORD_FILENAME = "topEngWords.txt";
     @Value("${top.word.file.name:#{null}}")
     private String topWordFileName;
-    public List<String> topWords = new ArrayList<>();
+    private List<String> topWords = new ArrayList<>();
     private boolean loaded = false;
 
     @PostConstruct

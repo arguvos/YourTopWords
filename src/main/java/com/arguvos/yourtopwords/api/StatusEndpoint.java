@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController()
 @RequestMapping("status")
 public class StatusEndpoint {
+    private final TranslateCache translateCache;
+
     @Autowired
-    TranslateCache translateCache;
+    public StatusEndpoint(TranslateCache translateCache) {
+        this.translateCache = translateCache;
+    }
 
     @GetMapping()
     public ResponseEntity<Object> status() {

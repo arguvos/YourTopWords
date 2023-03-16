@@ -88,4 +88,9 @@ public class TopWordEndpoint {
         httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(DEFAULT_ANKI_FILE_NAME).build().toString());
         return ResponseEntity.ok().headers(httpHeaders).body(ankiBytes);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Object> countWords() {
+        return new ResponseEntity<>(topWordLoader.getTopWords().size(), HttpStatus.OK);
+    }
 }
