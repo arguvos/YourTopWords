@@ -91,7 +91,17 @@ function App() {
             }), {
             method: 'GET',
             credentials: 'include',
-        });
+        })
+            .then( res => res.blob() )
+            .then( blob => {
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = "anki.apkg";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });;
     };
 
     const getStatus = () => {
