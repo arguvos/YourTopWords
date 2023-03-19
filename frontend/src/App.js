@@ -15,6 +15,7 @@ function App() {
     const [number, setNumber] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [languages, setLanguages] = useState([]);
+    const [language, setLanguage] = useState("");
     const [renderDownload, setRenderDownload] = useState(false);
     const [ready, setReady] = useState(false);
 
@@ -86,7 +87,7 @@ function App() {
 
     const anki = () => {
         fetch("http://localhost:8080/top/anki?" + new URLSearchParams({
-                lang: 'ru',
+                lang: language,
             }), {
             method: 'GET',
             credentials: 'include',
@@ -126,6 +127,7 @@ function App() {
             .then((response) => response.json())
             .then((response) => {
                 setLanguages(response);
+                setLanguage(response[0]);
             })
             .catch(() => {
                 setWord("Something wrong with internet connection");
@@ -154,7 +156,8 @@ function App() {
                             size="small"
                             labelId="demo-simple-select-autowidth-label"
                             id="demo-simple-select-autowidth"
-                            //onChange={handleChange}
+                            onChange={(e) => setLanguage(e.target.value)}
+                            value={language}
                             label="Language"
                         >
                             {languages.map(e => <MenuItem value={e}>{e}</MenuItem>)}
